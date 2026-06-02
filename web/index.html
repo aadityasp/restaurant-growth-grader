@@ -119,10 +119,15 @@ function analyze(site){
   const metaDesc=q('meta[name="description"]')?.content?.trim()||''
   const ogT=!!q('meta[property="og:title"]'), ogD=!!q('meta[property="og:description"]'), ogI=!!q('meta[property="og:image"]')
   const viewport=!!q('meta[name="viewport"]')
-  const favicon=!!q('link[rel*="icon" i]')
+  const favicon=!!q('link[rel*="icon" i]')||!!q('link[rel="apple-touch-icon" i]')||/apple-touch-icon|favicon\./i.test(lower)
   const tel=!!q('a[href^="tel:"]')||/(\(\d{3}\)\s?\d{3}[-\s]?\d{4})|(\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b)/.test(text)
-  const hours=(/\b(mon|tue|wed|thu|fri|sat|sun)(day)?\b/i.test(text)&&/\b(am|pm|open|hours|closed|:\d{2})\b/i.test(text))||/openinghours/i.test(lower)
-  const address=/\b\d{1,5}\s+\w+(\s\w+){0,4}\s+(st|street|ave|avenue|blvd|road|rd|dr|drive|lane|ln|way|suite|ste)\b/i.test(text)||/postaladdress/i.test(lower)
+  const timeRange=/\d{1,2}(:\d{2})?\s?(a\.?m\.?|p\.?m\.?)\s?(–|-|—|to|until|till)\s?\d{1,2}(:\d{2})?\s?(a\.?m\.?|p\.?m\.?)/i
+  const dayWord=/\b(mon|tue|wed|thu|fri|sat|sun|daily|everyday|every day|7 ?days)\b/i
+  const hasTime=/\d{1,2}(:\d{2})?\s?(a\.?m\.?|p\.?m\.?)/i
+  const hours=timeRange.test(text)||/openinghours/i.test(lower)||(dayWord.test(text)&&hasTime.test(text))
+  const streetSuffix=/\b\d{1,6}\s+([a-z0-9.'’-]+\s){0,4}(st|street|ave|avenue|blvd|boulevard|rd|road|dr|drive|ln|lane|way|ct|court|pl|place|cir|circle|hwy|highway|ter|terrace|plaza|pkwy|parkway|trail|loop|row|sq|square|route|rte|suite|ste)\b/i
+  const cityStateZip=/,\s*(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\.?\s+\d{5}/i
+  const address=streetSuffix.test(text)||cityStateZip.test(text)||/postaladdress|streetaddress/i.test(lower)
   const ordering=/(order online|order now|order ahead|start order|order pickup|order delivery)/i.test(text)||/(doordash|ubereats|uber eats|grubhub|toasttab|toast|chownow|owner\.com|clover|slice|seamless)/i.test(lower)
   const social=/(facebook\.com|instagram\.com|tiktok\.com|twitter\.com|x\.com\/)/i.test(lower)
   const imgs=doc.querySelectorAll('img').length
@@ -192,7 +197,7 @@ function render(d){
   const checks=d.dimensions.flatMap(x=>x.checks).map(k=>'<div class="ck '+(k.ok?'ok':'no')+'"><span class="m">'+(k.ok?'✓':'✕')+'</span>'+k.label+'</div>').join('')
   R.innerHTML='<div class="top">'
     +'<div class="dial"><svg viewBox="0 0 130 130" width="130" height="130"><circle cx="65" cy="65" r="56" fill="none" stroke="#E3DCCD" stroke-width="10"/><circle cx="65" cy="65" r="56" fill="none" stroke="'+c+'" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+dash+'" stroke-dashoffset="'+off+'" transform="rotate(-90 65 65)"/></svg><div class="num"><b style="color:'+c+'">'+d.grade+'</b><span>of 100</span></div></div>'
-    +'<div class="summary"><div class="tier" style="color:'+c+'">'+d.tier+' &middot; '+d.grade+'/100</div><div class="host">'+(d.title||d.host)+'</div><div class="risk">You could be losing ~$'+d.revenueAtRisk.toLocaleString()+'/mo from '+d.problemCount+' fixable issues</div></div></div>'
+    +'<div class="summary"><div class="tier" style="color:'+c+'">'+d.tier+' &middot; '+d.grade+'/100</div><div class="host">'+(d.title||d.host)+'</div><div class="risk">Rough estimate: ~$'+d.revenueAtRisk.toLocaleString()+'/mo in orders at risk &middot; '+d.problemCount+' fixable issues</div></div></div>'
     +'<div class="dims">'+dims+'</div>'
     +'<div class="sec"><h2>Your priority fixes</h2>'+fixes+'</div>'
     +'<div class="sec"><h2>Everything we checked, live</h2><div class="checks">'+checks+'</div></div>'

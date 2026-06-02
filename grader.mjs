@@ -39,11 +39,15 @@ export function runChecks(site) {
   const ogDesc = /property=["']og:description["']/i.test(html)
   const ogImage = /property=["']og:image["']/i.test(html)
   const viewport = /name=["']viewport["']/i.test(html)
-  const favicon = /rel=["'][^"']*icon[^"']*["']/i.test(html)
+  const favicon = /rel=["'][^"']*icon[^"']*["']/i.test(html) || /apple-touch-icon|favicon\./i.test(lower)
   const tel = /href=["']tel:/i.test(html) || /(\(\d{3}\)\s?\d{3}[-\s]?\d{4})|(\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b)/.test(text)
-  const dayRe = /\b(mon|tue|wed|thu|fri|sat|sun)(day)?\b/i
-  const hours = (dayRe.test(text) && /\b(am|pm|open|hours|closed|:\d{2})\b/i.test(text)) || /openinghours/i.test(lower)
-  const address = /\b\d{1,5}\s+\w+(\s\w+){0,4}\s+(st|street|ave|avenue|blvd|road|rd|dr|drive|lane|ln|way|suite|ste)\b/i.test(text) || /postaladdress/i.test(lower)
+  const timeRange = /\d{1,2}(:\d{2})?\s?(a\.?m\.?|p\.?m\.?)\s?(–|-|—|to|until|till)\s?\d{1,2}(:\d{2})?\s?(a\.?m\.?|p\.?m\.?)/i
+  const dayWord = /\b(mon|tue|wed|thu|fri|sat|sun|daily|everyday|every day|7 ?days)\b/i
+  const hasTime = /\d{1,2}(:\d{2})?\s?(a\.?m\.?|p\.?m\.?)/i
+  const hours = timeRange.test(text) || /openinghours/i.test(lower) || (dayWord.test(text) && hasTime.test(text))
+  const streetSuffix = /\b\d{1,6}\s+([a-z0-9.'’-]+\s){0,4}(st|street|ave|avenue|blvd|boulevard|rd|road|dr|drive|ln|lane|way|ct|court|pl|place|cir|circle|hwy|highway|ter|terrace|plaza|pkwy|parkway|trail|loop|row|sq|square|route|rte|suite|ste)\b/i
+  const cityStateZip = /,\s*(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\.?\s+\d{5}/i
+  const address = streetSuffix.test(text) || cityStateZip.test(text) || /postaladdress|streetaddress/i.test(lower)
   const ordering = /(order online|order now|order ahead|start order|order pickup|order delivery)/i.test(text)
     || /(doordash|ubereats|uber eats|grubhub|toasttab|toast|chownow|owner\.com|clover|slice|seamless)/i.test(lower)
   const social = /(facebook\.com|instagram\.com|tiktok\.com|twitter\.com|x\.com\/)/i.test(lower)

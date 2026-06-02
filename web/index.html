@@ -2,104 +2,225 @@
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Restaurant Growth Grader — built by Aditya Appana</title>
 <meta name="description" content="Live scan of a restaurant's online health. Fetches the real website and validates 20+ signals in real time. A working rebuild of Owner.com's Grader by Aditya Appana."/>
+<meta property="og:title" content="Restaurant Growth Grader"/>
+<meta property="og:description" content="Drop in a restaurant URL. It fetches the live site and grades 20+ signals in real time — no phone gate. A working rebuild of Owner.com's Grader."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--paper:#F6F3EC;--ink:#191510;--soft:#6B6457;--line:#E3DCCD;--accent:#2742D6;--good:#1f9d6b;--warn:#d98324;--bad:#d1453b}
-body{font-family:Inter,system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:880px;margin:0 auto;padding:24px 20px 80px}
-.bar{display:flex;justify-content:space-between;align-items:center}
-.brand{font-family:Fraunces,serif;font-weight:600;font-size:18px}
-.tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.12em}
-.real{display:inline-flex;align-items:center;gap:6px;margin:18px auto 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:#EEF1FD;border:1px solid #cdd5fb;border-radius:999px;padding:5px 12px}
-.real .d{width:7px;height:7px;border-radius:50%;background:var(--accent)}
-.hero{margin-top:6vh;text-align:center}
-h1{font-family:Fraunces,serif;font-weight:600;font-size:clamp(2rem,5.5vw,3.4rem);line-height:1.05;letter-spacing:-.5px}
-h1 .em{font-style:italic;color:var(--accent)}
-.sub{color:var(--soft);margin-top:14px;font-size:1.05rem;max-width:560px;margin-inline:auto}
-.form{margin:22px auto 0;display:flex;gap:10px;max-width:560px}
-input{flex:1;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:15px;font-family:inherit}
-input:focus{outline:none;border-color:var(--accent)}
-button{padding:14px 20px;border:0;border-radius:12px;background:var(--ink);color:var(--paper);font-weight:600;font-size:15px;cursor:pointer;transition:background .2s}
-button:hover{background:var(--accent)}
-.chips{margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.chip{font-size:12px;color:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;background:#fff}
-.chip:hover{border-color:var(--accent);color:var(--accent)}
-.scan{margin-top:36px;max-width:520px;margin-inline:auto;display:none}
+:root{
+  --bg:#FBF8F5; --card:#FFFFFF; --line:#DFDCD9; --muted:#787572; --chip:#EDEAE7; --ink:#000;
+  --poor:#AB4242; --fair:#CC8D2E; --good:#57AA30; --green:#094413;
+  --failbg:#F7E6E6;
+}
+html{-webkit-text-size-adjust:100%}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.appbar{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;max-width:1180px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:17px}
+.glyph{width:22px;height:22px;background:var(--ink);border-radius:6px;transform:rotate(45deg)}
+.brand small{font-weight:400;color:var(--muted);font-size:12px;margin-left:2px}
+.login{font-size:13px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 16px;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px 90px}
+
+/* hero */
+.hero{max-width:680px;margin:9vh auto 0;text-align:center}
+.real{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--green);background:#EAF3EC;border:1px solid #cfe6d4;border-radius:999px;padding:5px 13px;margin-bottom:22px}
+.real .d{width:7px;height:7px;border-radius:50%;background:var(--green)}
+h1{font-size:clamp(1.9rem,4.6vw,2.9rem);font-weight:600;line-height:1.1;letter-spacing:-.6px}
+.sub{color:var(--muted);margin-top:14px;font-size:1.02rem;max-width:520px;margin-inline:auto}
+.searchbox{margin:26px auto 0;display:flex;align-items:center;gap:8px;max-width:540px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 7px 7px 20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.searchbox input{flex:1;border:0;outline:none;font-size:15px;font-family:inherit;background:transparent}
+.submit{flex:0 0 auto;width:42px;height:42px;border:0;border-radius:50%;background:var(--green);color:#fff;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.submit:hover{transform:scale(1.06)}
+.chips{margin-top:16px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+.chip{font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:8px 15px;cursor:pointer;background:#fff;transition:border-color .15s,color .15s}
+.chip:hover{border-color:var(--ink);color:var(--ink)}
+
+/* scan */
+.scan{max-width:560px;margin:7vh auto 0;display:none}
 .scan.on{display:block}
-.scanrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--soft);opacity:.4;transition:opacity .3s}
+.scan h2{font-size:17px;font-weight:600;margin-bottom:4px}
+.scan .csub{color:var(--muted);font-size:13.5px;margin-bottom:20px}
+.scanrow{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--muted);opacity:.45;transition:opacity .35s,color .35s}
 .scanrow.active{opacity:1;color:var(--ink)}
-.scanrow .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto}
-.scanrow.done .dot{background:var(--accent);border-color:var(--accent)}
-.report{display:none;margin-top:26px}
-.report.on{display:block;animation:rise .5s ease}
-@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.top{display:flex;gap:24px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;flex-wrap:wrap}
-.dial{position:relative;width:130px;height:130px;flex:0 0 auto}
+.scanrow .dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;position:relative}
+.scanrow.active .dot{border-color:var(--green);border-top-color:transparent;animation:spin .7s linear infinite}
+.scanrow.done .dot{background:var(--green);border-color:var(--green);animation:none}
+.scanrow.done .dot::after{content:"✓";font-size:11px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.count{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+
+/* report layout */
+.report{display:none}
+.report.on{display:grid;grid-template-columns:320px 1fr;gap:40px;margin-top:18px;align-items:start;animation:rise .5s ease}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rail{position:sticky;top:24px}
+@media(max-width:880px){.report.on{grid-template-columns:1fr;gap:26px}.rail{position:static}}
+
+/* dial */
+.dial{position:relative;width:170px;height:170px;margin:0 auto}
 .dial .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-.dial .num b{font-family:Fraunces,serif;font-size:34px;font-weight:600;line-height:1}
-.dial .num span{font-size:11px;color:var(--soft)}
-.summary{flex:1;min-width:240px}
-.summary .tier{font-family:Fraunces,serif;font-size:22px;font-weight:600}
-.host{font-size:13px;color:var(--soft);margin-top:2px}
-.risk{margin-top:8px;font-size:14px;color:var(--bad);font-weight:600}
-.dims{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
-.dim{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
-.dim h3{font-size:13px;font-weight:600}
-.dim .barb{height:6px;background:var(--line);border-radius:4px;margin:8px 0;overflow:hidden}
-.dim .barb i{display:block;height:100%;border-radius:4px}
-.dim .sc{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--soft)}
-.sec{margin-top:24px}
-.sec h2{font-family:Fraunces,serif;font-size:20px;font-weight:600;margin-bottom:12px}
-.fix{display:flex;gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:9px}
-.fix .pri{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent)}
-.fix .body .t{font-weight:600;font-size:14px}
-.fix .body .a{font-size:12px;color:var(--soft);margin-top:2px}
-.fix .flag{margin-left:auto;font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--bad);align-self:center;white-space:nowrap}
-.checks{columns:2;column-gap:24px}
-.ck{break-inside:avoid;display:flex;gap:8px;font-size:13px;padding:4px 0;color:var(--soft)}
-.ck .m{font-weight:700}
-.ck.ok .m{color:var(--good)}.ck.no .m{color:var(--bad)}
-.cta{margin-top:24px;background:var(--ink);color:var(--paper);border-radius:16px;padding:20px;text-align:center}
-.cta b{font-family:Fraunces,serif;font-size:18px}
-.cta p{color:#cfc8ba;font-size:13px;margin-top:4px}
-.footer{margin-top:40px;text-align:center;font-size:12px;color:var(--soft);font-family:'JetBrains Mono',monospace;line-height:1.7}
-.footer a{color:var(--accent);text-decoration:none}
-.err{background:#FBF1E6;border:1px solid #e9cfa6;border-radius:12px;padding:16px;font-size:14px;color:#7a5a2e;margin-top:24px}
-@media(max-width:620px){.dims{grid-template-columns:1fr}.checks{columns:1}}
+.dial .num b{font-size:52px;font-weight:500;line-height:1;letter-spacing:-1px}
+.dial .num span{font-size:13px;color:var(--muted);margin-top:3px}
+.gradelabel{text-align:center;margin-top:14px}
+.gradelabel .gl{font-size:14px;color:var(--muted)}
+.gradelabel .tier{font-size:26px;font-weight:500;margin-top:1px}
+.subnav{margin-top:24px;border-top:1px solid var(--line);padding-top:8px}
+.subrow{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line);cursor:pointer;text-decoration:none}
+.subrow:last-child{border-bottom:0}
+.subrow .sd{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.subrow .sn{font-size:14px;flex:1}
+.subrow .stier{font-size:13px;font-weight:500}
+.subrow .ss{font-size:12px;color:var(--muted);min-width:54px;text-align:right}
+.railnote{margin-top:18px;font-size:11.5px;color:var(--muted);line-height:1.55}
+.railnote a{color:var(--green)}
+
+/* right column */
+.col{min-width:0}
+.idband{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.idband h2{font-size:24px;font-weight:600;letter-spacing:-.3px}
+.idband .dom{color:var(--muted);font-size:13.5px;margin-top:2px}
+.idband .dom a{color:var(--muted)}
+.caveat{margin-top:14px;background:#FBF1E6;border:1px solid #e9cfa6;border-radius:10px;padding:11px 14px;font-size:13px;color:#7a5a2e}
+.loss{margin-top:22px}
+.loss p{font-size:20px;font-weight:500;line-height:1.35}
+.loss ul{margin:12px 0 0;padding:0;list-style:none}
+.loss li{display:flex;gap:9px;font-size:14px;color:#33302d;padding:5px 0}
+.loss li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--poor);margin-top:8px;flex:0 0 auto}
+details.method{margin-top:14px;border:1px solid var(--line);border-radius:10px;background:#fff}
+details.method summary{cursor:pointer;list-style:none;padding:11px 15px;font-size:13px;font-weight:500;color:var(--muted)}
+details.method summary::-webkit-details-marker{display:none}
+details.method summary::after{content:" ⌄";float:right}
+details.method[open] summary::after{content:" ⌃"}
+.method-body{padding:0 15px 14px;font-size:12.5px;color:var(--muted);line-height:1.6}
+.method-body p{margin-bottom:7px}
+.reviewed{margin-top:26px;padding:14px 16px;background:#fff;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.reviewed b{font-weight:600}
+
+/* dimension sections */
+.dimsec{margin-top:30px}
+.dimhead{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
+.dimhead .dt{font-size:18px;font-weight:600}
+.dimhead .dtag{color:var(--muted);font-size:13.5px;margin-top:2px}
+.scorebadge{font-size:14px;font-weight:600;white-space:nowrap}
+.checklist{margin-top:14px;display:flex;flex-direction:column;gap:2px}
+.item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.ic{flex:0 0 auto;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;margin-top:1px}
+.ic.ok{background:var(--chip);color:var(--muted)}
+.ic.no{background:var(--failbg);color:var(--poor);font-weight:700}
+.itxt{min-width:0;flex:1}
+.iline{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.iname{font-size:14.5px;font-weight:500}
+.pill{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-radius:4px;padding:2px 7px}
+.pill.no{background:var(--failbg);color:var(--poor)}
+.pill.crit{background:var(--poor);color:#fff}
+.iwhy{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.5}
+.ifix{font-size:13px;color:var(--green);margin-top:5px;line-height:1.5}
+.ifix b{font-weight:600}
+
+/* local / honesty card */
+.localcard{margin-top:30px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+.localcard h3{font-size:16px;font-weight:600}
+.localcard p{font-size:13.5px;color:var(--muted);margin-top:8px;line-height:1.6}
+.localcard .tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.localcard .gtag{font-size:12px;color:var(--muted);background:var(--chip);border-radius:6px;padding:5px 10px}
+
+/* cta */
+.cta{margin-top:30px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px}
+.cta b{font-size:18px;font-weight:600}
+.cta p{color:var(--muted);font-size:13.5px;margin-top:7px;max-width:560px;line-height:1.6}
+.cta .btn{display:inline-block;margin-top:16px;background:var(--green);color:#fff;border-radius:10px;padding:11px 20px;font-weight:500;font-size:14.5px;text-decoration:none}
+.cta .trust{font-size:12px;color:var(--muted);margin-top:11px}
+
+.err{background:#FBF1E6;border:1px solid #e9cfa6;border-radius:12px;padding:18px;font-size:14.5px;color:#7a5a2e;max-width:620px;margin:6vh auto 0;line-height:1.55}
+.err b{color:#5e431f}
+.footer{margin:46px auto 0;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.8;max-width:620px}
+.footer a{color:var(--green);text-decoration:none}
 </style></head><body>
+
+<div class="appbar">
+  <a class="brand" href="./" style="text-decoration:none"><span class="glyph"></span> Growth Grader <small>· rebuilt by Aditya Appana</small></a>
+  <a class="login" href="https://portfolio.adityasriprasad.com" target="_blank" rel="noopener">Portfolio</a>
+</div>
+
 <div class="wrap">
-  <div class="bar"><div class="brand">Growth Grader</div><div class="tag">built by Aditya Appana</div></div>
+  <!-- HERO -->
   <div class="hero" id="hero">
-    <div class="real"><span class="d"></span> Live scan, not a mockup. It fetches the real site and validates 20+ signals.</div>
-    <h1>Is your restaurant<br>winning <span class="em">online?</span></h1>
-    <p class="sub">Drop your website in. It pulls your live site, checks it the way Google does, and shows exactly what's costing you orders.</p>
-    <div class="form"><input id="url" placeholder="yourrestaurant.com" autocomplete="off"/><button id="go">Grade it</button></div>
+    <div class="real"><span class="d"></span> Live scan, not a mockup — it fetches your real site and validates 20+ signals</div>
+    <h1>See your restaurant's online health score</h1>
+    <p class="sub">Drop in your website. It pulls your live site in seconds, checks it the way Google does, and shows exactly what's costing you orders. No phone number, no gate.</p>
+    <div class="searchbox">
+      <input id="url" placeholder="yourrestaurant.com" autocomplete="off"/>
+      <button class="submit" id="go" aria-label="Scan">→</button>
+    </div>
     <div class="chips">
-      <span class="chip" data-u="joespizzanyc.com">Joe's Pizza</span>
-      <span class="chip" data-u="bleeckerstreetpizza.com">Bleecker St Pizza</span>
-      <span class="chip" data-u="shakeshack.com">Shake Shack</span>
+      <span class="chip" data-u="joespizzanyc.com">How's my Google SEO?</span>
+      <span class="chip" data-u="bleeckerstreetpizza.com">What's broken on my site?</span>
+      <span class="chip" data-u="mamasfishhouse.com">Grade Mama's Fish House</span>
     </div>
   </div>
+
+  <!-- SCAN -->
   <div class="scan" id="scan">
+    <h2 id="scantitle">Scanning your site…</h2>
+    <div class="csub">Fetching the live page and validating it the way Google would.</div>
     <div class="scanrow"><span class="dot"></span> Fetching your live website</div>
-    <div class="scanrow"><span class="dot"></span> Checking Google SEO signals</div>
-    <div class="scanrow"><span class="dot"></span> Inspecting the guest experience</div>
-    <div class="scanrow"><span class="dot"></span> Reviewing local listing readiness</div>
-    <div class="scanrow"><span class="dot"></span> Writing your action plan</div>
+    <div class="scanrow"><span class="dot"></span> Reading your title, headings &amp; metadata</div>
+    <div class="scanrow"><span class="dot"></span> Checking menu, hours, phone &amp; online ordering</div>
+    <div class="scanrow"><span class="dot"></span> Testing mobile-friendliness</div>
+    <div class="scanrow"><span class="dot"></span> Checking local-listing &amp; schema readiness</div>
+    <div class="scanrow"><span class="dot"></span> Writing your plain-English action plan</div>
+    <div class="count" id="count">about 6 seconds remaining</div>
   </div>
+
+  <!-- REPORT -->
   <div class="report" id="report"></div>
+
   <div class="footer">
-    A working rebuild of Owner.com's Grader &middot; by <a href="https://portfolio.adityasriprasad.com">Aditya Appana</a><br>
-    No phone number required. Every grade is a real-time fetch + validation of your live site.
+    A working rebuild of <a href="https://grader.owner.com" target="_blank" rel="noopener">Owner.com's Grader</a> · by <a href="https://portfolio.adityasriprasad.com" target="_blank" rel="noopener">Aditya Appana</a><br>
+    Every grade is a real-time fetch + validation of your live site. No phone number required.
   </div>
 </div>
+
 <script>
 const $=s=>document.querySelector(s)
 const steps=[...document.querySelectorAll('.scanrow')]
-const color=p=>p>=85?'#1f9d6b':p>=70?'#3a8f5f':p>=50?'#d98324':'#d1453b'
-function ck(label,ok,pts,critical,fix){return{label,ok:!!ok,pts,critical:!!critical,fix}}
+
+/* ---- tier helpers (Owner: Poor / Fair / Good / Excellent) ---- */
+function tierOf(p){return p>=85?'Excellent':p>=70?'Good':p>=50?'Fair':'Poor'}
+function tierColor(p){return p>=70?'#57AA30':p>=50?'#CC8D2E':'#AB4242'}
+function dialStops(p){return p>=70?['#5BAE34','#2F8F4E']:p>=50?['#DD763B','#D8A837']:['#C0504A','#AB4242']}
+
+/* ---- grounded revenue model (benchmark-based, diminishing returns, capped) ---- */
+const ANNUAL_REVENUE=405000, DIGITAL_SHARE=0.35
+const ONLINE_BASELINE=(ANNUAL_REVENUE/12)*DIGITAL_SHARE   // ~$11,812/mo
+const RECOVERY={
+  'Online ordering call-to-action':0.15,'Mobile viewport set':0.10,'Address on site':0.08,
+  'Name, address, phone present':0.08,'Structured data (schema.org)':0.08,'Phone number on site':0.06,
+  'Operating hours on site':0.06,'Page title is present':0.05,'H1 headline exists':0.05,'HTTPS secure':0.05,
+  'Image alt-text coverage':0.04,'Restaurant schema type':0.04,'Social media links':0.04,'Links to maps/listings':0.04,
+  'Title includes a keyword':0.03,'Meta description (>80 chars)':0.03,'Enough page content':0.03,
+  'Open Graph title/description':0.02,'Open Graph image':0.02,'Favicon present':0.01
+}
+const DEFAULT_RECOVERY=0.03
+function estimateRisk(failedLabels){
+  const coeffs=failedLabels.map(l=>RECOVERY[l]??DEFAULT_RECOVERY).sort((a,b)=>b-a)
+  let pct=0,w=1
+  for(const c of coeffs){pct+=c*w;w*=0.85}             // each next fix worth 85% of the last
+  if(pct>0.30)pct=0.30                                  // cap at 30% of online baseline
+  return Math.round(ONLINE_BASELINE*pct)
+}
+const methodologyHTML=
+  '<details class="method"><summary>How this $ estimate is calculated</summary><div class="method-body">'+
+  '<p>We start from the average independent restaurant’s revenue (~$405,000/yr, per Sauce / Lineup.ai) and take a conservative 35% as digitally driven — PYMNTS finds ~41% of restaurant orders are now digital — giving an online baseline of about $'+Math.round(ONLINE_BASELINE).toLocaleString()+'/mo.</p>'+
+  '<p>Each failing check carries a recovery weight (online-ordering CTA ~15%, mobile-friendliness ~10%, local NAP/schema ~8%) drawn from research on how local search, mobile and ordering UX move orders (Think with Google, TouchBistro, Square/ChowNow, BrightLocal).</p>'+
+  '<p>Because fixes overlap, we combine them with diminishing returns (each next fix counts 85% of the prior) and cap the total at 30% of the baseline — so it’s a grounded estimate, not a guarantee.</p>'+
+  '</div></details>'
+
+/* ---- check factory: ck(label, ok, {pts, crit, why, problem, fix}) ---- */
+function ck(label,ok,m){return{label,ok:!!ok,pts:m.pts,critical:!!m.crit,why:m.why,problem:m.problem,fix:m.fix}}
 
 async function fetchHTML(raw){
   let url=raw.trim(); if(!/^https?:\/\//i.test(url)) url='https://'+url
@@ -139,70 +260,108 @@ function analyze(site){
   const mapsLink=/(google\.com\/maps|goo\.gl\/maps|yelp\.com)/i.test(lower)
 
   const dims=[
-    {name:'Search & SEO',weight:40,checks:[
-      ck('Page title is present',!!title,6,true,'Add a clear <title> with your restaurant name and city.'),
-      ck('Title includes a keyword',kw.test(title),4,false,'Put your cuisine and city in the title, e.g. "Joe’s Pizza | New York Pizzeria".'),
-      ck('H1 headline exists',!!h1,5,true,'Add one H1 that says who you are and where.'),
-      ck('Meta description (>80 chars)',metaDesc.length>80,5,false,'Write a 1-2 sentence meta description with cuisine + neighborhood.'),
-      ck('Open Graph title/description',ogT&&ogD,5,false,'Add og:title and og:description so shared links preview well.'),
-      ck('Open Graph image',ogI,4,false,'Add an og:image (a great food photo) for link previews.'),
-      ck('HTTPS secure',site.https,5,true,'Serve the site over HTTPS so Google and customers trust it.'),
-      ck('Structured data (schema.org)',jsonld,6,false,'Add Restaurant JSON-LD so Google can read hours, menu, rating.'),
+    {name:'Search Results',tag:'Get your website to the top of Google',weight:40,checks:[
+      ck('Page title is present',!!title,{pts:6,crit:true,why:'Your page title is the headline Google shows in search results — the first thing customers see.',problem:'Your homepage has no title for Google to show.',fix:'Add a clear <title> with your restaurant name and city.'}),
+      ck('Title includes a keyword',kw.test(title),{pts:4,why:'A title with your cuisine and city helps you rank when people search “pizza near me”.',problem:'Your title doesn’t mention your cuisine or city.',fix:'Put your cuisine and city in the title, e.g. “Joe’s Pizza | New York Pizzeria”.'}),
+      ck('H1 headline exists',!!h1,{pts:5,crit:true,why:'One clear H1 tells Google and guests what this page is about.',problem:'Your page is missing a main headline (H1).',fix:'Add one H1 that says who you are and where.'}),
+      ck('Meta description (>80 chars)',metaDesc.length>80,{pts:5,why:'The meta description is the sentence under your link in Google — a good one wins the click.',problem:'No meta description, so Google writes its own.',fix:'Write a 1–2 sentence description with cuisine + neighborhood.'}),
+      ck('Open Graph title/description',ogT&&ogD,{pts:5,why:'Open Graph tags control how your link looks when shared on Facebook, iMessage and WhatsApp.',problem:'Shared links show no title or description.',fix:'Add og:title and og:description so shared links preview well.'}),
+      ck('Open Graph image',ogI,{pts:4,why:'A food photo on shared links dramatically lifts click-through.',problem:'Shared links have no preview image.',fix:'Add an og:image (a great food photo).'}),
+      ck('HTTPS secure',site.https,{pts:5,crit:true,why:'Browsers flag non-HTTPS sites as “Not secure”, scaring guests away.',problem:'Your site isn’t served securely over HTTPS.',fix:'Serve the site over HTTPS.'}),
+      ck('Structured data (schema.org)',jsonld,{pts:6,why:'Schema markup lets Google show your hours, menu and rating right in search.',problem:'No structured data for Google to read.',fix:'Add Restaurant JSON-LD so Google can read hours, menu and rating.'}),
     ]},
-    {name:'Guest Experience',weight:40,checks:[
-      ck('Phone number on site',tel,7,true,'Show a tappable phone number in the header and footer.'),
-      ck('Operating hours on site',hours,6,true,'List your hours so guests can plan and Google can index them.'),
-      ck('Address on site',address,5,true,'Show your full address; it powers maps and local SEO.'),
-      ck('Online ordering call-to-action',ordering,8,true,'Add a prominent "Order Online" button above the fold.'),
-      ck('Enough page content',text.length>600,4,false,'Add a short About section describing the food and story.'),
-      ck('Mobile viewport set',viewport,4,true,'Add a responsive viewport meta tag; most guests are on phones.'),
-      ck('Social media links',social,3,false,'Link Instagram and Facebook so guests can follow you.'),
-      ck('Favicon present',favicon,3,false,'Add a favicon so the tab and bookmarks look professional.'),
+    {name:'Guest Experience',tag:'Improve the experience on your website',weight:40,checks:[
+      ck('Phone number on site',tel,{pts:7,crit:true,why:'A tappable phone number is the fastest path to a booking or an order.',problem:'No tappable phone number on the page.',fix:'Show a tappable phone number in the header and footer.'}),
+      ck('Operating hours on site',hours,{pts:6,crit:true,why:'“Are they open?” is the #1 question guests have — answer it instantly.',problem:'Your hours aren’t on the website.',fix:'List your hours so guests can plan and Google can index them.'}),
+      ck('Address on site',address,{pts:5,crit:true,why:'Your address powers maps, directions and local search.',problem:'No address found on the page.',fix:'Show your full address; it powers maps and local SEO.'}),
+      ck('Online ordering call-to-action',ordering,{pts:8,crit:true,why:'An “Order Online” button above the fold is the single biggest revenue driver.',problem:'No clear way to order online.',fix:'Add a prominent “Order Online” button above the fold.'}),
+      ck('Enough page content',text.length>600,{pts:4,why:'Thin pages give Google and guests too little to work with.',problem:'There’s very little text on the page.',fix:'Add a short About section describing the food and story.'}),
+      ck('Mobile viewport set',viewport,{pts:4,crit:true,why:'Most guests visit on a phone — without a viewport tag the site looks broken on mobile.',problem:'The site isn’t set up for mobile screens.',fix:'Add a responsive viewport meta tag.'}),
+      ck('Social media links',social,{pts:3,why:'Links to Instagram and Facebook turn visitors into followers.',problem:'No links to your social profiles.',fix:'Link Instagram and Facebook so guests can follow you.'}),
+      ck('Favicon present',favicon,{pts:3,why:'A favicon makes your tab and bookmarks look professional and trustworthy.',problem:'No favicon, so the browser tab looks generic.',fix:'Add a favicon.'}),
     ]},
-    {name:'Local Listings',weight:20,checks:[
-      ck('Restaurant schema type',schema,6,false,'Mark up the page as a Restaurant/LocalBusiness for rich results.'),
-      ck('Name, address, phone present',tel&&address,6,true,'Keep Name/Address/Phone consistent on-site and on Google.'),
-      ck('Image alt-text coverage',altRatio>=0.6,4,false,'Add alt text to food photos so they rank in image search.'),
-      ck('Links to maps/listings',mapsLink,4,false,'Link your Google Maps and Yelp listings from the site.'),
+    {name:'Local Listings',tag:'Make your restaurant easy to find',weight:20,checks:[
+      ck('Restaurant schema type',schema,{pts:6,why:'Marking the page as a Restaurant unlocks rich results with rating, price and hours.',problem:'Page isn’t marked up as a Restaurant/LocalBusiness.',fix:'Mark up the page as a Restaurant/LocalBusiness.'}),
+      ck('Name, address, phone present',tel&&address,{pts:6,crit:true,why:'Consistent Name/Address/Phone is what Google uses to trust and rank your listing.',problem:'Name, address and phone aren’t all present together.',fix:'Keep Name/Address/Phone consistent on-site and on Google.'}),
+      ck('Image alt-text coverage',altRatio>=0.6,{pts:4,why:'Alt text lets your food photos rank in Google Images and helps accessibility.',problem:'Most images are missing alt text.',fix:'Add alt text to your food photos.'}),
+      ck('Links to maps/listings',mapsLink,{pts:4,why:'Linking your Google Maps and Yelp listings drives reviews and directions.',problem:'No links to your Google Maps or Yelp listings.',fix:'Link your Google Maps and Yelp listings from the site.'}),
     ]},
   ]
   let total=0,max=0
-  const out=dims.map(d=>{const dMax=d.checks.reduce((s,x)=>s+x.pts,0),dGot=d.checks.reduce((s,x)=>s+(x.ok?x.pts:0),0),norm=Math.round(dGot/dMax*d.weight);total+=norm;max+=d.weight;return{name:d.name,score:norm,max:d.weight,checks:d.checks}})
+  const out=dims.map(d=>{const dMax=d.checks.reduce((s,x)=>s+x.pts,0),dGot=d.checks.reduce((s,x)=>s+(x.ok?x.pts:0),0),norm=Math.round(dGot/dMax*d.weight);total+=norm;max+=d.weight;return{name:d.name,tag:d.tag,score:norm,max:d.weight,checks:d.checks}})
   const grade=Math.round(total/max*100)
-  const tier=grade>=85?'Excellent':grade>=70?'Good':grade>=50?'Fair':'Needs Work'
   const fails=dims.flatMap(d=>d.checks.filter(x=>!x.ok))
-  const crit=fails.filter(x=>x.critical).length
-  const revenueAtRisk=crit*420+(fails.length-crit)*130
-  const fixes=fails.sort((a,b)=>(b.critical-a.critical)||(b.pts-a.pts)).slice(0,8).map((x,i)=>({priority:i+1,title:x.fix,area:x.label,critical:x.critical}))
-  return {host:new URL(site.url).host,title,grade,tier,dimensions:out,revenueAtRisk,problemCount:fails.length,fixes}
+  const revenueAtRisk=estimateRisk(fails.map(f=>f.label))
+  const totalChecks=dims.reduce((s,d)=>s+d.checks.length,0)
+  return {host:new URL(site.url).host,title,grade,tier:tierOf(grade),dimensions:out,revenueAtRisk,problemCount:fails.length,totalChecks,fails}
 }
 
+let countTimer=null
 async function run(raw){
   $('#hero').style.display='none';$('#report').className='report';$('#report').innerHTML=''
   const scan=$('#scan');scan.className='scan on';steps.forEach(s=>s.className='scanrow')
-  let i=0;const t=setInterval(()=>{if(i>0)steps[i-1].classList.add('done');if(i<steps.length){steps[i].classList.add('active');i++}},560)
+  $('#scantitle').textContent='Scanning '+raw.replace(/^https?:\/\//,'').replace(/\/$/,'')+'…'
+  let i=0;const t=setInterval(()=>{if(i>0)steps[i-1].classList.add('done');if(i<steps.length){steps[i].classList.add('active');i++}},620)
+  let remain=6;$('#count').textContent='about 6 seconds remaining'
+  countTimer=setInterval(()=>{remain=Math.max(1,remain-1);$('#count').textContent='about '+remain+' second'+(remain===1?'':'s')+' remaining'},900)
   let data,err=null
   const started=Date.now()
   try{const site=await fetchHTML(raw);data=analyze(site)}catch(e){err=e}
-  await new Promise(r=>setTimeout(r,Math.max(0,2600-(Date.now()-started))))
-  clearInterval(t);steps.forEach(s=>s.classList.add('done','active'));scan.className='scan'
-  if(err){$('#report').className='report on';$('#report').innerHTML='<div class="err"><b>Could not reach that site just now.</b><br>The live fetch timed out or the site blocked readers. Try another URL (the example chips work well). An honest "could not scan" beats a fake score, which is exactly the credibility bug in the real Grader.</div>';return}
+  await new Promise(r=>setTimeout(r,Math.max(0,3000-(Date.now()-started))))
+  clearInterval(t);clearInterval(countTimer);steps.forEach(s=>s.classList.add('done','active'));scan.className='scan'
+  if(err){$('#report').className='report';$('#report').style.display='block';$('#report').innerHTML='<div class="err"><b>We couldn’t read that site just now.</b><br>The live fetch timed out or the site blocked automated readers. Try another URL (the example chips work well). An honest “couldn’t scan” beats a fake score — which is exactly the credibility bug I flag in the real Grader.</div>';return}
   render(data)
 }
-function render(d){
-  const R=$('#report');R.className='report on'
-  const c=color(d.grade),dash=2*Math.PI*56,off=dash*(1-d.grade/100)
-  const dims=d.dimensions.map(x=>{const p=Math.round(x.score/x.max*100);return '<div class="dim"><h3>'+x.name+'</h3><div class="barb"><i style="width:'+p+'%;background:'+color(p)+'"></i></div><div class="sc">'+x.score+' / '+x.max+'</div></div>'}).join('')
-  const fixes=d.fixes.map(f=>'<div class="fix"><span class="pri">'+String(f.priority).padStart(2,'0')+'</span><div class="body"><div class="t">'+f.title+'</div><div class="a">'+f.area+'</div></div>'+(f.critical?'<span class="flag">Critical</span>':'')+'</div>').join('')
-  const checks=d.dimensions.flatMap(x=>x.checks).map(k=>'<div class="ck '+(k.ok?'ok':'no')+'"><span class="m">'+(k.ok?'✓':'✕')+'</span>'+k.label+'</div>').join('')
-  R.innerHTML='<div class="top">'
-    +'<div class="dial"><svg viewBox="0 0 130 130" width="130" height="130"><circle cx="65" cy="65" r="56" fill="none" stroke="#E3DCCD" stroke-width="10"/><circle cx="65" cy="65" r="56" fill="none" stroke="'+c+'" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+dash+'" stroke-dashoffset="'+off+'" transform="rotate(-90 65 65)"/></svg><div class="num"><b style="color:'+c+'">'+d.grade+'</b><span>of 100</span></div></div>'
-    +'<div class="summary"><div class="tier" style="color:'+c+'">'+d.tier+' &middot; '+d.grade+'/100</div><div class="host">'+(d.title||d.host)+'</div><div class="risk">Rough estimate: ~$'+d.revenueAtRisk.toLocaleString()+'/mo in orders at risk &middot; '+d.problemCount+' fixable issues</div></div></div>'
-    +'<div class="dims">'+dims+'</div>'
-    +'<div class="sec"><h2>Your priority fixes</h2>'+fixes+'</div>'
-    +'<div class="sec"><h2>Everything we checked, live</h2><div class="checks">'+checks+'</div></div>'
-    +'<div class="cta"><b>Fix all of this, automatically.</b><p>The on-ramp: from a free real-time grade to an AI that rewrites the site, fills the gaps, and keeps you ahead of competitors.</p></div>'
+
+function renderCheck(k){
+  const ic=k.ok?'<span class="ic ok">✓</span>':'<span class="ic no">✕</span>'
+  let pill=''
+  if(!k.ok)pill=k.critical?'<span class="pill crit">Fix this</span>':'<span class="pill no">Needs work</span>'
+  const fix=!k.ok?'<div class="ifix"><b>Fix:</b> '+k.fix+'</div>':''
+  return '<div class="item">'+ic+'<div class="itxt"><div class="iline"><span class="iname">'+k.label+'</span>'+pill+'</div><div class="iwhy">'+k.why+'</div>'+fix+'</div></div>'
 }
+
+function render(d){
+  const R=$('#report');R.className='report on';R.style.display=''
+  const stops=dialStops(d.grade),tc=tierColor(d.grade)
+  const r=68.5,circ=2*Math.PI*r,off=circ*(1-d.grade/100)
+
+  // sub-score nav
+  const subnav=d.dimensions.map((x,idx)=>{const p=Math.round(x.score/x.max*100),col=tierColor(p)
+    return '<a class="subrow" href="#dim'+idx+'"><span class="sd" style="background:'+col+'"></span><span class="sn">'+x.name+'</span><span class="stier" style="color:'+col+'">'+tierOf(p)+'</span><span class="ss">'+x.score+' of '+x.max+'</span></a>'}).join('')
+
+  // top problems (banner bullets)
+  const topProblems=d.fails.slice().sort((a,b)=>(b.critical-a.critical)||(b.pts-a.pts)).slice(0,5)
+    .map(f=>'<li>'+f.problem+'</li>').join('')
+
+  // dimension sections
+  const dimsecs=d.dimensions.map((x,idx)=>{const p=Math.round(x.score/x.max*100),col=tierColor(p)
+    return '<div class="dimsec" id="dim'+idx+'"><div class="dimhead"><div><div class="dt">'+(idx+1)+'. '+x.name+'</div><div class="dtag">'+x.tag+'</div></div><div class="scorebadge" style="color:'+col+'">'+x.score+'/'+x.max+'</div></div><div class="checklist">'+x.checks.map(renderCheck).join('')+'</div></div>'}).join('')
+
+  const lossNoun=d.problemCount===1?'problem':'problems'
+  const needWork=d.problemCount
+
+  R.innerHTML=
+    '<div class="rail">'+
+      '<div class="dial"><svg viewBox="0 0 170 170" width="170" height="170"><defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="'+stops[0]+'"/><stop offset="100%" stop-color="'+stops[1]+'"/></linearGradient></defs>'+
+        '<circle cx="85" cy="85" r="'+r+'" fill="none" stroke="rgba(9,10,11,0.06)" stroke-width="13"/>'+
+        '<circle cx="85" cy="85" r="'+r+'" fill="none" stroke="url(#dg)" stroke-width="13" stroke-linecap="round" stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'" transform="rotate(-90 85 85)"/></svg>'+
+        '<div class="num"><b>'+d.grade+'</b><span>of 100</span></div></div>'+
+      '<div class="gradelabel"><div class="gl">Online health grade</div><div class="tier">'+d.tier+'</div></div>'+
+      '<div class="subnav">'+subnav+'</div>'+
+      '<div class="railnote">A working rebuild of <a href="https://grader.owner.com" target="_blank" rel="noopener">Owner.com’s Grader</a> — every signal is fetched and validated live, with no phone gate.</div>'+
+    '</div>'+
+    '<div class="col">'+
+      '<div class="idband"><div><h2>'+(d.title?d.title.split(/[|–—\-·]/)[0].trim():d.host)+'</h2><div class="dom"><a href="https://'+d.host+'" target="_blank" rel="noopener">'+d.host+'</a></div></div></div>'+
+      '<div class="loss"><p>You could be losing <b>~$'+d.revenueAtRisk.toLocaleString()+'/month</b> due to '+d.problemCount+' '+lossNoun+'.</p><ul>'+topProblems+'</ul>'+methodologyHTML+'</div>'+
+      '<div class="reviewed"><b>'+d.totalChecks+' things reviewed, '+needWork+' need work</b> — here’s what’s wrong and how to fix it.</div>'+
+      dimsecs+
+      '<div class="localcard"><h3>Local visibility &amp; competitors</h3><p>Owner’s Grader shows a competitor leaderboard and your Google rankings here. That data comes from the Google Places &amp; Search APIs — so this rebuild doesn’t fake it. Wire in a Google Business Profile and these populate with <b>real</b> numbers. Showing verified data instead of confident guesses is the #1 fix in my teardown.</p><div class="tagrow"><span class="gtag">Competitor leaderboard</span><span class="gtag">Local-pack rankings</span><span class="gtag">Review sentiment</span><span class="gtag">PageSpeed field data</span></div></div>'+
+      '<div class="cta"><b>Fix all of this — automatically.</b><p>This is the on-ramp Owner nails: a free, real-time grade that flows into an AI that rewrites the site and fills the gaps. The difference in my rebuild — the full report is shown immediately, with no phone gate. The value lands first, then the ask.</p><a class="btn" href="https://portfolio.adityasriprasad.com" target="_blank" rel="noopener">See how I’d grow this →</a><div class="trust">Built in a weekend by Aditya Appana · code on request</div></div>'+
+    '</div>'
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+
 $('#go').onclick=()=>{const u=$('#url').value.trim();if(u)run(u)}
 $('#url').addEventListener('keydown',e=>{if(e.key==='Enter'&&$('#url').value.trim())run($('#url').value.trim())})
 document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{$('#url').value=c.dataset.u;run(c.dataset.u)})

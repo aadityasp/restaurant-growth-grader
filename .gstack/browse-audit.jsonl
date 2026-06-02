@@ -1,0 +1,15 @@
+{"ts":"2026-06-02T05:17:25.146Z","cmd":"viewport","args":"900x1300","origin":"about:blank","durationMs":7,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:17:25.506Z","cmd":"goto","args":"http://localhost:8799/","origin":"http://localhost:8799/","durationMs":277,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:17:25.738Z","cmd":"wait","args":"--load","origin":"http://localhost:8799/","durationMs":154,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:17:26.752Z","cmd":"screenshot","args":"--viewport /tmp/proto_landing.png","origin":"http://localhost:8799/","durationMs":64,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:17:26.868Z","cmd":"click","args":".chip","origin":"http://localhost:8799/","durationMs":36,"status":"error","hasCookies":false,"mode":"launched","error":"click: Error: strict mode violation: locator('.chip') resolved to 3 elements:\n    1) <span class=\"chip\" data-u=\"joespizzanyc.com\">Joe's Pizza</span> aka getByText('Joe\\'s Pizza')\n    2) <span class=\"chip\" data-u=\"shakeshack.com\">Shake Shack</span> aka getByText('Shake Shack')\n    3) <span class=\"chi…"}
+{"ts":"2026-06-02T05:17:32.101Z","cmd":"screenshot","args":"/tmp/proto_report.png","origin":"http://localhost:8799/","durationMs":122,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:17:32.177Z","cmd":"console","args":"--errors","origin":"http://localhost:8799/","durationMs":2,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:18:00.711Z","cmd":"viewport","args":"900x1500","origin":"http://localhost:8799/","durationMs":6,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:18:00.808Z","cmd":"goto","args":"http://localhost:8799/","origin":"http://localhost:8799/","durationMs":20,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:18:00.881Z","cmd":"wait","args":"--load","origin":"http://localhost:8799/","durationMs":1,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:18:01.581Z","cmd":"fill","args":"#url joespizzanyc.com","origin":"http://localhost:8799/","durationMs":57,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:18:01.671Z","cmd":"click","args":"#go","origin":"http://localhost:8799/","durationMs":16,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:18:03.837Z","cmd":"screenshot","args":"--viewport /tmp/proto_scan.png","origin":"http://localhost:8799/","durationMs":43,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:18:08.024Z","cmd":"screenshot","args":"/tmp/proto_report2.png","origin":"http://localhost:8799/","durationMs":70,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:18:08.095Z","cmd":"js","args":"document.getElementById('hero').style.display + ' | report:' + document.getElementById('report').className","origin":"http://localhost:8799/","durationMs":1,"status":"ok","hasCookies":false,"mode":"launched"}

@@ -1,0 +1,8 @@
+{"ts":"2026-06-02T05:29:07.515Z","cmd":"viewport","args":"900x1500","origin":"about:blank","durationMs":5,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:29:07.789Z","cmd":"goto","args":"http://localhost:8801/","origin":"http://localhost:8801/","durationMs":182,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:29:08.024Z","cmd":"wait","args":"--load","origin":"http://localhost:8801/","durationMs":162,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:29:08.674Z","cmd":"fill","args":"#url joespizzanyc.com","origin":"http://localhost:8801/","durationMs":56,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:29:08.767Z","cmd":"click","args":"#go","origin":"http://localhost:8801/","durationMs":20,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:29:16.896Z","cmd":"js","args":"document.getElementById('report').className+' | '+(document.querySelector('.tier')?.textContent||'no report')","origin":"http://localhost:8801/","durationMs":6,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:29:17.004Z","cmd":"console","args":"--errors","origin":"http://localhost:8801/","durationMs":0,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-02T05:29:17.290Z","cmd":"screenshot","args":"/tmp/static_report.png","origin":"http://localhost:8801/","durationMs":204,"status":"ok","hasCookies":false,"mode":"launched"}
